@@ -31,9 +31,9 @@ def get_names_list() -> list[str]:
 
     if os.path.exists(file_path) and compute_md5(file_path) == FILE_MD5_HASH:
         with open(file_path, "r", encoding="utf-8") as file:
-            names_list: list[str] = [
-                name.strip() for name in file.readlines() if name.strip() != ""
-            ]
+            names_list: list[str] = list(
+                set(name.strip() for name in file.readlines() if name.strip() != "")
+            )
         return names_list
 
     url = "https://raw.githubusercontent.com/karpathy/makemore/master/names.txt"
@@ -41,7 +41,7 @@ def get_names_list() -> list[str]:
     if response.status_code != 200:
         raise RuntimeError("Failed to fetch names list")
 
-    names_list = [name for name in response.text.split("\n") if name != ""]
+    names_list = list(set(name for name in response.text.split("\n") if name != ""))
 
     if not os.path.exists(folder_path):
         print("{folder_path} does not exist, creating it...")
