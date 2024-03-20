@@ -7,19 +7,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch import Tensor
 
-
-def get_chars() -> str:
-    """Returns 'abcdefghijklmnopqrstuvwxyz'."""
-    return "".join([chr(i) for i in range(ord("a"), ord("z") + 1)])
-
-
-def get_itos_stoi() -> tuple[dict[int, str], dict[str, int]]:
-    """Returns integer to character and character to integer mappings."""
-    chars = get_chars()
-    itos: dict[int, str] = {0: "."}
-    itos.update({i + 1: s for i, s in enumerate(chars)})
-    stoi: dict[str, int] = {s: i for i, s in itos.items()}
-    return itos, stoi
+from .util import get_itos_stoi
 
 
 def get_bigram_counts(words: list[str]) -> Tensor:
