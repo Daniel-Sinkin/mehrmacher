@@ -15,7 +15,7 @@ def compute_md5(file_path):
     return hash_md5.hexdigest()
 
 
-FILE_MD5_HASH = "401b3c4cac9e28a586ed15e81256680d"
+NAME_FILE_MD5_HASH = "401b3c4cac9e28a586ed15e81256680d"
 
 
 def get_names_list() -> list[str]:
@@ -29,19 +29,22 @@ def get_names_list() -> list[str]:
     file_name = "names.txt"
     file_path = os.path.join(folder_path, file_name)
 
-    if os.path.exists(file_path) and compute_md5(file_path) == FILE_MD5_HASH:
-        with open(file_path, "r", encoding="utf-8") as file:
-            names_list: list[str] = list(
-                set(name.strip() for name in file.readlines() if name.strip() != "")
-            )
-        return names_list
+    if os.path.exists(file_path):
+        if compute_md5(file_path) == NAME_FILE_MD5_HASH:
+            with open(file_path, "r", encoding="utf-8") as file:
+                names_list: list[str] = list(
+                    set(name.strip() for name in file.readlines() if name.strip() != "")
+                )
+            return names_list
+        else:
+            print("Local names.txt has incorrect md5 hash, fetching the latest...")
 
     url = "https://raw.githubusercontent.com/karpathy/makemore/master/names.txt"
     response = requests.get(url, timeout=10)
     if response.status_code != 200:
         raise RuntimeError("Failed to fetch names list")
 
-    names_list = list(set(name for name in response.text.split("\n") if name != ""))
+    names_list = [name for name in response.text.splitlines()]
 
     if not os.path.exists(folder_path):
         print("{folder_path} does not exist, creating it...")
@@ -51,3 +54,7 @@ def get_names_list() -> list[str]:
         file.write(response.text)
 
     return names_list
+
+
+if __name__ == "__main__":
+    get_names_list()
